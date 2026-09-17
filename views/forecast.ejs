@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather Forecast</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+
+  <main class="container">
+
+    <a href="/" class="back-link">← Search another location</a>
+
+    <% if (error) { %>
+
+      <section class="error-card">
+        <h2>Unable to get forecast</h2>
+        <p><%= error %></p>
+      </section>
+
+    <% } else { %>
+
+      <!-- ========================================= -->
+      <!-- LOCATION BLOCK -->
+      <!-- ========================================= -->
+
+      <section class="card location-block">
+
+        <% if (location.formatted) { %>
+          <p>
+            <strong>Location:</strong>
+            <%= location.formatted %>
+          </p>
+        <% } %>
+
+        <p>
+          <strong>Latitude:</strong>
+          <%= location.geometry.lat.toFixed(4) %>
+        </p>
+
+        <p>
+          <strong>Longitude:</strong>
+          <%= location.geometry.lng.toFixed(4) %>
+        </p>
+
+      </section>
+
+
+      <!-- ========================================= -->
+      <!-- CURRENT TIME BLOCK -->
+      <!-- ========================================= -->
+
+      <section class="card">
+
+        <h2>Current Weather</h2>
+
+        <div class="current-weather">
+
+          <div class="temperature">
+            <%= current.temperature_2m %>°C
+          </div>
+
+          <div>
+            <p>
+              <strong>Time:</strong>
+              <%= current.time.replace("T", " ") %>
+            </p>
+
+            <p>
+              <strong>Wind speed:</strong>
+              <%= current.wind_speed_10m %> km/h
+            </p>
+
+            <p>
+              <strong>Wind direction:</strong>
+              <%= current.wind_direction_10m %> °
+            </p>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ========================================= -->
+      <!-- HOURLY BLOCK -->
+      <!-- ========================================= -->
+
+      <section class="card">
+
+        <h2>Hourly Forecast</h2>
+
+        <div class="hourly-container">
+
+          <% hourly.forEach((hour) => { %>
+
+            <div class="hour-card">
+
+              <h3>
+                <%= hour.time.split("T")[1] %>
+              </h3>
+
+              <p class="hour-temperature">
+                <%= hour.temperature %>°C
+              </p>
+
+              <p>
+                Weather code:
+                <%= hour.weatherCode %>
+              </p>
+
+            </div>
+
+          <% }) %>
+
+        </div>
+
+      </section>
+
+
+
+    <% } %>
+
+  </main>
+
+</body>
+</html>
