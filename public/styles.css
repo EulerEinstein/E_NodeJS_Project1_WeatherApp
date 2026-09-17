@@ -92,7 +92,7 @@ button:hover {
 }
 
 .hour-card {
-  background: #eff6ff;
+  background: #3561db;
   padding: 18px;
   border-radius: 10px;
   border: 1px solid #dbeafe;
@@ -100,12 +100,13 @@ button:hover {
 
 .hour-card h3 {
   margin-top: 0;
-  color: #1d4ed8;
+  color: #eff6f0;
 }
 
 .hour-temperature {
   font-size: 28px;
   font-weight: bold;
+  color: #eff6f0;
 }
 
 .back-link {

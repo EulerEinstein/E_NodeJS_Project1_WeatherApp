@@ -102,13 +102,15 @@
                 <%= hour.time.split("T")[1] %>
               </h3>
 
-              <p class="hour-temperature">
-                <%= hour.temperature %>°C
+              <p>
+                <img 
+                    src="<%= weatherCodeImages[hour.weatherCode].day.image %>"
+                    alt="<%= weatherCodeImages[hour.weatherCode].day.description %>"
+                >
               </p>
 
-              <p>
-                Weather code:
-                <%= hour.weatherCode %>
+              <p class="hour-temperature">
+                <%= hour.temperature %>°C
               </p>
 
             </div>

@@ -1,4 +1,5 @@
 require("dotenv").config();
+const weatherCodeImages = require("../data/weatherCodeImages.json");
 
 const getWeatherForecast = async (req,res) => {
 
@@ -8,8 +9,10 @@ const getWeatherForecast = async (req,res) => {
     let location = await getLatLng(locationQuery);
 
     let weatherData = await getweatherData(location);
-
+    
+    // Store current weather data
     const current = weatherData.current;
+    // Create an hourly forecast array
     const hourly = weatherData.hourly.time.map((time, index) => ({
         time: time,
         temperature: weatherData.hourly.temperature_2m[index],
@@ -22,6 +25,7 @@ const getWeatherForecast = async (req,res) => {
       location,
       current,
       hourly,
+      weatherCodeImages,
       error: null
     });
 
@@ -84,7 +88,7 @@ async function getweatherData (location) {
 
     
     try {
-        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${location.geometry.lat}&longitude=${location.geometry.lng}&hourly=temperature_2m,weather_code&current=temperature_2m,wind_speed_10m,wind_direction_10m&forecast_days=1`);
+        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${location.geometry.lat}&longitude=${location.geometry.lng}&hourly=temperature_2m,weather_code&current=temperature_2m,wind_speed_10m,wind_direction_10m&forecast_days=1&timezone=auto`);
         
         // Check if the external response was successful
         if (!response.ok) {
