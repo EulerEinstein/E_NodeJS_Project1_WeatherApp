@@ -1,0 +1,42 @@
+This is the root/search page.
+views/index.ejs
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather App</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+
+  <main class="container">
+
+    <section class="search-card">
+      <h1>Weather App</h1>
+
+      <p>
+        Search for a location to view the current weather
+        and hourly forecast.
+      </p>
+
+      <form action="/forecast" method="GET">
+        <input
+          type="text"
+          name="q"
+          placeholder="Enter a location..."
+          value="<%= query %>"
+          required
+        >
+
+        <button type="submit">
+          Search
+        </button>
+      </form>
+    </section>
+
+  </main>
+
+</body>
+</html>
