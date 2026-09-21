@@ -21,7 +21,38 @@ A simple weather application built with Express.js and EJS. Users can search for
 
 ### Installation
 
-```bash
 git clone https://github.com/your-username/your-repo.git
 cd your-repo
 npm install
+
+Create a .env file and add your OpenCage API key:
+
+OPENCAGE_API_KEY=your_api_key_here
+
+Then start the application:
+
+npm start
+
+## How It Works
+
+User searches for a location.
+
+OpenCage converts the location into latitude and longitude.
+
+The coordinates are sent to Open-Meteo.
+
+Weather data is retrieved and displayed using an EJS template.
+
+## Learning Goals
+
+This project was created to practice:
+
+Express.js and controllers
+
+Working with APIs
+
+Managing API keys and environment variables
+
+EJS templating
+
+Integrating third-party services
