@@ -1,108 +1,94 @@
-require("dotenv").config();
 const weatherCodeImages = require("../data/weatherCodeImages.json");
+const { getLatLng } = require("../services/geocode.service");
+const { getWeatherData } = require("../services/weather.service");
 
-const getWeatherForecast = async (req,res) => {
+const getWeatherCondition = (weatherCode, isDay) => {
+  const conditions = weatherCodeImages[String(weatherCode)];
+  const period = Number(isDay) === 0 ? "night" : "day";
 
-    
-    const locationQuery = req.query.q
+  if (!conditions || !conditions[period]) {
+    return { description: "Unknown", image: "" };
+  }
 
-    let location = await getLatLng(locationQuery);
+  return conditions[period];
+};
 
-    let weatherData = await getweatherData(location);
-    
-    // Store current weather data
-    const current = weatherData.current;
-    // Create an hourly forecast array
-    const hourly = weatherData.hourly.time.map((time, index) => ({
-        time: time,
+const renderForecastError = (res, error) => {
+  res.render("forecast", { error });
+};
+
+const getWeatherForecast = async (req, res) => {
+  const locationQuery = typeof req.query.q === "string" ? req.query.q.trim() : "";
+
+  if (!locationQuery) {
+    return renderForecastError(res, "Please enter a location name.");
+  }
+
+  try {
+    const location = await getLatLng(locationQuery);
+
+    if (!location || !location.geometry) {
+      return renderForecastError(
+        res,
+        `No location found for "${locationQuery}". Try a different name.`
+      );
+    }
+
+    const weatherData = await getWeatherData(location);
+
+    if (!weatherData?.current || !weatherData?.hourly?.time) {
+      return renderForecastError(
+        res,
+        "Weather data is unavailable for this location."
+      );
+    }
+
+    const currentCondition = getWeatherCondition(
+      weatherData.current.weather_code,
+      weatherData.current.is_day
+    );
+
+    const current = {
+      time: weatherData.current.time,
+      temperature: weatherData.current.temperature_2m,
+      windSpeed: weatherData.current.wind_speed_10m,
+      windDirection: weatherData.current.wind_direction_10m,
+      weatherCode: weatherData.current.weather_code,
+      isDay: Number(weatherData.current.is_day) === 1,
+      description: currentCondition.description,
+      image: currentCondition.image,
+    };
+
+    const hourly = weatherData.hourly.time.map((time, index) => {
+      const isDay = Number(weatherData.hourly.is_day?.[index]) === 1;
+      const condition = getWeatherCondition(
+        weatherData.hourly.weather_code[index],
+        isDay ? 1 : 0
+      );
+
+      return {
+        time,
         temperature: weatherData.hourly.temperature_2m[index],
-        weatherCode: weatherData.hourly.weather_code[index]
-    }));
+        weatherCode: weatherData.hourly.weather_code[index],
+        isDay,
+        description: condition.description,
+        image: condition.image,
+      };
+    });
 
-    // Send the data back to your client
-    //res.json(weatherData);
     res.render("forecast", {
       location,
       current,
       hourly,
-      weatherCodeImages,
-      error: null
+      error: null,
     });
-
+  } catch (error) {
+    console.error("Forecast request failed:", error);
+    renderForecastError(
+      res,
+      "Unable to fetch the forecast right now. Please try again."
+    );
+  }
 };
-
-async function getLatLng(reqQuery) {
-
-    /****************************************
-     openCage API 
-    ***************************************/ 
-    
-    const api_key = process.env.OPENCAGE_API_KEY;
-    const query = reqQuery;
-    const api_url = 'https://api.opencagedata.com/geocode/v1/json';
-    let location;
-
-    const request_url = api_url
-        + '?key=' + api_key
-        + '&q=' + encodeURIComponent(query)
-        + '&pretty=1'
-        + '&no_annotations=1';
-
-    try {
-        const response = await fetch(request_url);
-
-        if (response.ok) {
-            // Success!
-            const data = await response.json();
-
-            if (data.results && data.results.length > 0) {
-
-                location = data.results[0];
-                console.log(location.formatted, location.geometry.lat, location.geometry.lng);
-
-                return location;
-            } else {
-                console.log('No results found.');
-            }
-
-        } else if (response.status <= 500) {
-            // We reached the server, but it returned an error
-            const data = await response.json();
-
-            console.log('Unable to geocode! Response code: ' + response.status);
-            console.log('Error msg: ' + data.status.message);
-        } else {
-            console.log('Server error: ' + response.status);
-        }
-    } catch (error) {
-        // Connection/network error
-        console.log('Unable to connect to server:', error);
-    }
-
-}
-
-async function getweatherData (location) {
-    /****************************************
-     openMeteo API
-        ***************************************/ 
-
-    
-    try {
-        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${location.geometry.lat}&longitude=${location.geometry.lng}&hourly=temperature_2m,weather_code&current=temperature_2m,wind_speed_10m,wind_direction_10m&forecast_days=1&timezone=auto`);
-        
-        // Check if the external response was successful
-        if (!response.ok) {
-            return res.status(response.status).json({ error: 'Failed to fetch external data' });
-        }
-
-        const weatherData = await response.json();
-        
-        return weatherData;
-
-    } catch (error) {
-        console.error('Error fetching data:', error);
-    }
-}
-
 
 module.exports = { getWeatherForecast };

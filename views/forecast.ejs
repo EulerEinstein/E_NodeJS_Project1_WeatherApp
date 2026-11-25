@@ -58,11 +58,23 @@
 
         <div class="current-weather">
 
+          <% if (current.image) { %>
+            <img
+              class="weather-icon"
+              src="<%= current.image %>"
+              alt="<%= current.description %>"
+            >
+          <% } %>
+
           <div class="temperature">
-            <%= current.temperature_2m %>°C
+            <%= current.temperature %>°C
           </div>
 
           <div>
+            <p class="condition">
+              <%= current.description %>
+            </p>
+
             <p>
               <strong>Time:</strong>
               <%= current.time.replace("T", " ") %>
@@ -70,12 +82,12 @@
 
             <p>
               <strong>Wind speed:</strong>
-              <%= current.wind_speed_10m %> km/h
+              <%= current.windSpeed %> km/h
             </p>
 
             <p>
               <strong>Wind direction:</strong>
-              <%= current.wind_direction_10m %> °
+              <%= current.windDirection %> °
             </p>
           </div>
 
@@ -103,10 +115,14 @@
               </h3>
 
               <p>
-                <img 
-                    src="<%= weatherCodeImages[hour.weatherCode].day.image %>"
-                    alt="<%= weatherCodeImages[hour.weatherCode].day.description %>"
+                <img
+                  src="<%= hour.image %>"
+                  alt="<%= hour.description %>"
                 >
+              </p>
+
+              <p class="hour-condition">
+                <%= hour.description %>
               </p>
 
               <p class="hour-temperature">

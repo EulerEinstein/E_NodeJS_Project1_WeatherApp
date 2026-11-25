@@ -83,6 +83,18 @@ button:hover {
   color: #2563eb;
 }
 
+.weather-icon {
+  width: 96px;
+  height: 96px;
+}
+
+.condition {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #1d4ed8;
+}
+
 .hourly-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -98,9 +110,23 @@ button:hover {
   border: 1px solid #dbeafe;
 }
 
+.hour-card h3,
+.hour-card p {
+  color: #eff6f0;
+}
+
 .hour-card h3 {
   margin-top: 0;
-  color: #eff6f0;
+}
+
+.hour-card img {
+  width: 72px;
+  height: 72px;
+}
+
+.hour-condition {
+  margin: 4px 0 8px;
+  font-size: 15px;
 }
 
 .hour-temperature {
